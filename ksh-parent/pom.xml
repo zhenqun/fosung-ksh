@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.fosung.ksh.framework</groupId>
+        <artifactId>ksh-framework-main</artifactId>
+        <version>1.0.5-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.fosung.ksh</groupId>
+    <artifactId>ksh-parent</artifactId>
+    <version>1.1.2-SNAPSHOT</version>
+
+    <packaging>pom</packaging>
+
+    <description>
+        可视化项目父级。
+        所有系统模块均继承该模块，主要用于系统版本控制和第三方组件版本。
+    </description>
+
+    <properties>
+        <ksh.version>1.1.2-SNAPSHOT</ksh.version>
+        <framework.version>1.0.5-SNAPSHOT</framework.version>
+        <docker.image.prefix>ksh</docker.image.prefix>
+        <!--docker 容器相关-->
+        <docker.repository>registry.cn-qingdao.aliyuncs.com</docker.repository>
+
+<!--        <docker.base.java>${docker.repository}/hub_fosung/jdk8:8u111</docker.base.java>-->
+        <docker.base.jar>${docker.repository}/hub_fosung/jar:1.8</docker.base.jar>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.fosung.ksh.framework</groupId>
+                <artifactId>ksh-framework-webmvc</artifactId>
+                <version>${framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fosung.ksh.framework</groupId>
+                <artifactId>ksh-framework-web</artifactId>
+                <version>${framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fosung.ksh.framework</groupId>
+                <artifactId>ksh-framework-dao</artifactId>
+                <version>${framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fosung.ksh.framework</groupId>
+                <artifactId>ksh-framework-common</artifactId>
+                <version>${framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fosung.ksh.framework</groupId>
+                <artifactId>ksh-framework-task</artifactId>
+                <version>${framework.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>fosung nexus</id>
+            <name>fosung nexus repository</name>
+            <url>http://nexus.fosung.com:8081/nexus/content/groups/jar-all/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>maven2</id>
+            <name>maven2 repository</name>
+            <url>http://central.maven.org/maven2/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>nexus</id>
+            <name>Team Nexus Repository</name>
+            <url>http://nexus.fosung.com:8081/nexus/content/groups/jar-all/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+</project>

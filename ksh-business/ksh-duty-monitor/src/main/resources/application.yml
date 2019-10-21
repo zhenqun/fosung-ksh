@@ -1,0 +1,45 @@
+app:
+  swagger:
+    title: 无感考勤API接口文档
+    description: 无感考勤相关接口
+    scanPackage: com.fosung.ksh
+
+#redis配置地址
+spring:
+  profiles:
+    active: dev
+
+  sleuth:
+    sampler:
+      percentage: 1
+
+# actuator配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+  endpoint:
+    health:
+      show-details: always
+
+# 端口
+server:
+  port: 8010
+
+
+logging:
+  config: classpath:logback-spring.xml
+
+
+hik:
+  host: 123.130.115.76:1443
+  appKey: 26648104
+  appSecret: QCi0YTOSdu50KfN48L1X
+
+
+topic:
+   HOST: tcp://123.130.115.76:1883
+   TOPIC: fas/admin
+   clientid: admin

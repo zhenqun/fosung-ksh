@@ -1,0 +1,44 @@
+app:
+  swagger:
+    title: 视频会议API接口
+    description: 用于创建会议室、对会议室授权，同步用户信息，现暂时支持好视通
+    scanPackage: com.fosung.ksh.monitor.controller
+
+
+#redis配置地址
+spring:
+  profiles:
+    active: local
+
+  sleuth:
+    sampler:
+      percentage: 1
+
+
+# actuator配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+  endpoint:
+    health:
+      show-details: always
+
+# 端口
+server:
+  port: 8002
+
+logging:
+  config: classpath:logback-spring.xml
+
+
+# 开启饥饿加载
+ribbon:
+  eager-load:
+    enabled: true
+  ConnectTimeout: 10000
+  ReadTimeout: 60000
+  MaxAutoRetries: 1 #对 第一次 请求 的 服务 的 重试 次数
+  MaxAutoRetriesNextServer: 1 #要 重试 的 下一个 服务 的 最大 数量（ 不包括

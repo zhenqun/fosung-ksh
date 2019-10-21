@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fosung.ksh.punsh.dao.AttendanceRecordDao">
+
+
+    <resultMap id="punchMap" type="com.fosung.ksh.punsh.vo.PunchRecord">
+        <id column="id" property="id"></id>
+        <result column="time" property="time"></result>
+        <result column="name" property="name"></result>
+        <result column="verification" property="verification"></result>
+        <result column="sn" property="sn"></result>
+        <result column="one_name" property="street"></result>
+        <result column="two_name" property="community"></result>
+        <result column="status" property="status"></result>
+        <result column="pin" property="pin"></result>
+    </resultMap>
+
+    <select id="queryPunchRecord" resultMap="punchMap" parameterType="com.fosung.ksh.punsh.vo.QueryRecordConDto">
+
+        WITH act as (
+            SELECT a.id,a.time,b.name,a.verification,b.sn,b.pin,a.status
+            FROM attendance_record a LEFT JOIN user_info b on a.pin=b.pin AND a.sn = b.sn
+            WHERE a.pin = b.pin AND a.time in (SELECT min(c.time)
+            FROM attendance_record c,user_info d WHERE c.pin=d.pin
+            <if test="dateTime != null and dateTime != ''">
+                and #{dateTime} = to_char(c.time, 'yyyy-MM-dd')
+            </if>
+            GROUP BY c.pin
+            )
+        )
+        SELECT distinct a.city_name one_name,b.city_name two_name,d.org_code,e.time,e.name,e.verification,e.sn,e.pin,e.status
+        FROM administrative_division a
+        LEFT JOIN administrative_division b ON a.city_code=b.parent_code
+        LEFT JOIN client_info d on b.city_code=d.org_code
+        LEFT JOIN act e on d.sn=e.sn
+        WHERE 1=1
+        <if test="orgCode !=null and orgCode != ''">
+            <if test="flag == 1 ">
+                 and a.parent_code= #{orgCode}
+            </if>
+            <if test="flag == 2 ">
+                and b.parent_code= #{orgCode}
+            </if>
+            <if test="flag == 3 ">
+                and b.city_code= #{orgCode}
+            </if>
+        </if>
+        <if test="community !=null and community != ''">
+            and b.city_name LIKE CONCAT('%',#{community},'%')
+        </if>
+        <if test="status !=null and status != '' and status == 255">
+            and e.status = #{status}
+        </if>
+        <if test="status !=null and status != '' and status == 2">
+            and e.status is null
+        </if>
+        <if test="userName != null and userName != ''">
+            and e.name LIKE CONCAT('%',#{userName},'%')
+        </if>
+        ORDER BY e.time DESC NULLS LAST
+    </select>
+
+    <select id="queryAttendRecord" resultMap="punchMap" parameterType="com.fosung.ksh.punsh.vo.QueryRecordConDto">
+        WITH act as (
+        SELECT a.id,a.time,b.name,a.verification,b.sn,b.pin,a.status
+        FROM attendance_record a LEFT JOIN user_info b on a.pin=b.pin AND a.sn = b.sn
+        WHERE a.pin = b.pin AND a.time in (SELECT min(c.time)
+        FROM attendance_record c,user_info d WHERE c.pin=d.pin
+        <if test="dateTime != null and dateTime != ''">
+            and #{dateTime} = to_char(c.time, 'yyyy-MM-dd')
+        </if>
+        GROUP BY c.pin
+        )
+        )
+        SELECT distinct a.city_name one_name,b.city_name two_name,d.org_code,e.time,e.name,e.verification,e.sn,e.pin,e.status
+        FROM administrative_division a
+        LEFT JOIN administrative_division b ON a.city_code=b.parent_code
+        LEFT JOIN client_info d on b.city_code=d.org_code
+        LEFT JOIN act e on d.sn=e.sn
+        WHERE 1=1
+        <if test="orgCode !=null and orgCode != ''">
+            <if test="flag == 1 ">
+                and a.parent_code= #{orgCode}
+            </if>
+            <if test="flag == 2 ">
+                and b.parent_code= #{orgCode}
+            </if>
+            <if test="flag == 3 ">
+                and b.city_code= #{orgCode}
+            </if>
+        </if>
+        <if test="community !=null and community != ''">
+            and b.city_name LIKE CONCAT('%',#{community},'%')
+        </if>
+        <if test="status !=null and status != '' and status == 255">
+            and e.status = #{status}
+        </if>
+        <if test="status !=null and status != '' and status == 2">
+            and e.status is null
+        </if>
+        <if test="userName != null and userName != ''">
+            and e.name LIKE CONCAT('%',#{userName},'%')
+        </if>
+        ORDER BY e.time DESC NULLS LAST
+    </select>
+
+    <select id="queryAttend" resultType="com.fosung.ksh.punsh.entity.AttendanceRecord">
+        SELECT pin, status, verification, time, sn FROM attendance_record WHERE to_char(time, 'yyyy-MM-dd HH:mm:ss') &gt;= #{dateStart}
+              AND to_char(time, 'yyyy-MM-dd HH:mm:ss') &lt;= #{dateEnd}  AND pin = #{pin};
+    </select>
+</mapper>

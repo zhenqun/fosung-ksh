@@ -1,0 +1,22 @@
+spring:
+  profiles:
+    active: local
+  application:
+    name: ksh-eureka
+
+# actuator配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+  endpoint:
+    health:
+      show-details: always
+
+server:
+  port: 8761
+
+logging:
+  config: classpath:logback-spring.xml

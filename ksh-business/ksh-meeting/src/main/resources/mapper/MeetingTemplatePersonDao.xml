@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fosung.ksh.meeting.dao.MeetingTemplatePersonDao">
+    <resultMap id="countMap" type="HashMap">
+        <result column="need_num" javaType="Integer" property="needNum"/>
+        <result column="org_id" javaType="String" property="orgId"/>
+    </resultMap>
+    <select id="meetingTemplateOrgNum" resultMap="countMap" >
+        select org_id,"count"(*) need_num from meeting_template_person where 1=1
+        <if test="searchParam.meetingTemplateId != null and searchParam.meetingTemplateId != ''">
+            and meeting_template_id=#{searchParam.meetingTemplateId}
+        </if>
+        <if test="searchParam.userRights != null and searchParam.userRights != ''">
+            and user_right in(${searchParam.userRights})
+        </if>
+        GROUP BY org_id
+    </select>
+    <select id="meetingTemplatePersonNum" resultType="java.lang.Integer" >
+        select "count"(*) need_num from meeting_template_person where 1=1
+        <if test="searchParam.meetingTemplateId != null and searchParam.meetingTemplateId != ''">
+            and meeting_template_id=#{searchParam.meetingTemplateId}
+        </if>
+        <if test="searchParam.userRights != null and searchParam.userRights != ''">
+            and user_right in(${searchParam.userRights})
+        </if>
+
+    </select>
+</mapper>

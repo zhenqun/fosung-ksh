@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+    <property name="LOG_PATH" value="/data/logs"/>
+    <property name="LOG_PATTERN"
+              value="%d{MM-dd HH:mm:ss.SSS} -%5p -[%t] %-40.40logger{39} : %-5L - %m%n"/>
+    <springProperty scope="context" name="applicationName" source="spring.application.name"/>
+
+    <!-- 控制台输出 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                ${LOG_PATTERN}
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!-- DEBUG日志输出，DUBUG级别日志包含所有记录 -->
+    <appender name="DEBUG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${applicationName}/debug.log</file>
+        <!-- 设置滚动策略 -->
+        <!-- 按天来回滚，如果需要按小时来回滚，则设置为{yyyy-MM-dd_HH} -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--设置日志命名模式 -->
+            <fileNamePattern>${LOG_PATH}/${applicationName}/debug.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+            <!-- 如果按天来回滚，则最大保存时间为60天，60天之前的都将被清理掉 这里的值与滚动策略模式有关 -->
+            <maxHistory>60</maxHistory>
+            <!-- 按照日期进行归档，并且对日志文件大小进行限制 -->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- 设置文件大于1KB进行压缩归档 -->
+                <maxFileSize>50MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder><!-- 格式化输出 -->
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- INFO日志输出，INFO级别日志包含除DEBUG级别外的所有日志 -->
+    <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>DENY</onMatch>
+            <onMismatch>ACCEPT</onMismatch>
+        </filter>
+
+        <file>${LOG_PATH}/${applicationName}/info.log</file>
+        <!-- 设置滚动策略 -->
+        <!-- 按天来回滚，如果需要按小时来回滚，则设置为{yyyy-MM-dd_HH} -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--设置日志命名模式 -->
+            <fileNamePattern>${LOG_PATH}/${applicationName}/info.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+            <!-- 如果按天来回滚，则最大保存时间为60天，60天之前的都将被清理掉 这里的值与滚动策略模式有关 -->
+            <maxHistory>60</maxHistory>
+            <!-- 按照日期进行归档，并且对日志文件大小进行限制 -->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- 设置文件大于1KB进行压缩归档 -->
+                <maxFileSize>50MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder><!-- 格式化输出 -->
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+
+    <!-- INFO日志输出，INFO级别日志包含除DEBUG级别外的所有日志 -->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <file>${LOG_PATH}/${applicationName}/error.log</file>
+        <!-- 设置滚动策略 -->
+        <!-- 按天来回滚，如果需要按小时来回滚，则设置为{yyyy-MM-dd_HH} -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--设置日志命名模式 -->
+            <fileNamePattern>${LOG_PATH}/${applicationName}/error.%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+            <!-- 如果按天来回滚，则最大保存时间为60天，60天之前的都将被清理掉 这里的值与滚动策略模式有关 -->
+            <maxHistory>60</maxHistory>
+            <!-- 按照日期进行归档，并且对日志文件大小进行限制 -->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- 设置文件大于1KB进行压缩归档 -->
+                <maxFileSize>50MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder><!-- 格式化输出 -->
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+
+    <springProfile name="dev,local,test">
+        <include resource="logback/logback-dev.xml"/>
+    </springProfile>
+
+    <springProfile name="pro">
+        <include resource="logback/logback-pro.xml"/>
+    </springProfile>
+
+</configuration>

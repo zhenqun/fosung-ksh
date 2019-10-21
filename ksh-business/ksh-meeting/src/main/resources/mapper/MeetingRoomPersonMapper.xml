@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fosung.ksh.meeting.dao.MeetingRoomPersonDao">
+
+    <resultMap id="countMap" type="HashMap">
+        <result column="need_num" javaType="Integer" property="needNum"/>
+        <result column="sign_num" javaType="Integer" property="signNum"/>
+        <result column="need_org_num" javaType="Integer" property="needOrgNum"/>
+        <result column="sign_org_num" javaType="Integer" property="signOrgNum"/>
+        <result column="not_num" javaType="Integer" property="notNum"/>
+        <result column="org_id" javaType="String" property="orgId"/>
+    </resultMap>
+
+    <resultMap id="resultOrg" type="HashMap" >
+        <result column="org_id" property="orgId" jdbcType="VARCHAR" />
+        <result column="sign_in_type" property="signIntype" jdbcType="VARCHAR" />
+
+    </resultMap>
+
+    <select id="countSign" resultMap="countMap">
+        SELECT
+        t.need_num,
+        t.sign_num,
+        ( t.need_num - t.sign_num ) not_num
+        FROM
+        (
+        SELECT COALESCE
+        ( COUNT ( * ), 0 ) need_num,
+        COALESCE ( COUNT ( sign_in_type ), 0 ) sign_num
+        FROM
+        meeting_room_person
+        WHERE
+        user_right != 'NOAUTH'
+        and meeting_room_id = #{meetingRoomId}
+        <if test="userType != null and userType != ''">
+            and user_type = #{userType}
+        </if>
+        <if test="userRight != null and userRight != ''">
+            and user_right in ('HEARER','ATTENDEE','CHAIRMAN')
+        </if>
+        and org_id in
+        <foreach collection="orgIds" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+        ) t
+    </select>
+
+
+    <select id="countOrgSign" resultMap="countMap">
+
+        SELECT COUNT
+        ( * ) need_org_num,
+        COALESCE(SUM ( CASE WHEN TEMP.sign_num > 0 THEN 1 ELSE 0 END ), 0) sign_org_num
+        FROM
+        (
+        SELECT COALESCE
+        ( COUNT ( * ), 0 ) need_num,
+        COALESCE ( COUNT ( sign_in_type ), 0 ) sign_num
+        FROM
+        meeting_room_person T
+        WHERE
+        user_right != 'NOAUTH'
+        and meeting_room_id = #{meetingRoomId}
+        <if test="userType != null and userType != ''">
+            and user_type = #{userType}
+        </if>
+        and org_id in
+        <foreach collection="orgIds" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+
+        GROUP BY
+        T.org_id
+        ) TEMP
+    </select>
+
+
+
+    <select id="sitesNum" resultType="int"  parameterType="java.util.HashMap">
+
+        select
+        COALESCE(count(*),0) sitesNum
+        from meeting_room_person
+        where meeting_room_id in ( SELECT
+        id
+        FROM
+        meeting_room
+        WHERE
+        del = FALSE
+        and org_id in
+        <foreach collection="orgIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <if test="time != null and time != ''">
+            AND #{time} = to_char(real_start_time, 'yyyy-MM-dd')
+        </if>
+        <if test="meetingType!= null and meetingType != ''">
+            and meeting_type =#{meetingType}
+        </if>)
+        and user_right in ('HEARER','ATTENDEE','CHAIRMAN')
+    </select>
+
+    <select id="sitesIng" resultType="int">
+
+        select
+        COALESCE(sum(f1.num),0)
+        from
+        (
+        select
+        count(distinct org_id) as num
+        from meeting_room_person
+        where meeting_room_id in ( SELECT
+        id
+        FROM
+        meeting_room
+        WHERE
+        del = FALSE
+        and org_id in
+        <foreach collection="orgIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND now() > hope_start_time
+        AND real_end_time IS NULL)
+        group by meeting_room_id,org_id) as f1;
+    </select>
+
+
+    <select id="sitesAllYear" resultType="java.lang.Integer">
+        select
+        COALESCE(sum(f1.num),0)
+        from
+        (
+        select
+        count(distinct org_id) as num
+        from meeting_room_person
+        where meeting_room_id in ( SELECT
+        id
+        FROM
+        meeting_room
+        WHERE del = FALSE
+        and org_id in
+        <foreach collection="orgIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND #{endDate} >= hope_start_time
+        and #{startDate} &lt;= hope_start_time )
+        group by meeting_room_id,org_id) as f1;
+    </select>
+
+    <select id="meeetingRoomOrgNum" resultMap="countMap" >
+        select org_id,"count"(*) need_num from meeting_room_person where 1=1
+        <if test="searchParam.meetingRoomId != null and searchParam.meetingRoomId != ''">
+            and meeting_room_id=#{searchParam.meetingRoomId}
+        </if>
+        <if test="searchParam.userRights != null and searchParam.userRights != ''">
+            and user_right in(${searchParam.userRights})
+        </if>
+        GROUP BY org_id
+    </select>
+    <select id="meeetingRoomPersonNum" resultType="java.lang.Integer" >
+        select "count"(*) need_num from meeting_room_person where 1=1
+        <if test="searchParam.meetingRoomId != null and searchParam.meetingRoomId != ''">
+            and meeting_room_id=#{searchParam.meetingRoomId}
+        </if>
+        <if test="searchParam.userRights != null and searchParam.userRights != ''">
+            and user_right in(${searchParam.userRights})
+        </if>
+
+    </select>
+
+
+    <select id="getOrgByMeetingRoom" resultMap="resultOrg" >
+        select org_id from meeting_room_person where 1=1
+        <if test="searchParam.meetingRoomId != null and searchParam.meetingRoomId != ''">
+            and meeting_room_id=#{searchParam.meetingRoomId}
+        </if>
+        <if test="searchParam.userRights != null and searchParam.userRights != ''">
+            and user_right in(${searchParam.userRights})
+        </if>
+        <if test="searchParam.signInType">
+            and sign_in_type is not null
+        </if>
+        and org_id in
+        <foreach collection="searchParam.orgIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        GROUP BY org_id
+    </select>
+
+
+     <!--好视通接口  应参加人数  实际参加人数-->
+    <select id="countSignNeed" resultType="java.lang.Integer">
+        SELECT COUNT(*) need_num
+        FROM
+        meeting_room_person
+        WHERE
+        user_right != 'NOAUTH'
+        and meeting_room_id = #{meetingRoomId}
+        <if test="userType != null and userType != ''">
+            and user_type = #{userType}
+        </if>
+        <if test="userRight != null and userRight != ''">
+            and user_right in ('HEARER','ATTENDEE','CHAIRMAN')
+        </if>
+        <if test="signInType != null and signInType != ''">
+            and sign_in_type  IS NOT NULL
+        </if>
+        <if test="signNotType != null and signNotType != ''">
+            and sign_in_type  IS NULL
+        </if>
+        and org_id in
+        <foreach collection="orgIds" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </select>
+
+
+    <select id="countOrgSignNeed" resultType="java.lang.Integer">
+        SELECT "count"(*) orgSignNeed FROM (
+        SELECT COUNT(*) need_num
+        FROM
+        meeting_room_person
+        WHERE
+        user_right != 'NOAUTH'
+        and meeting_room_id = #{meetingRoomId}
+        <if test="userType != null and userType != ''">
+            and user_type = #{userType}
+        </if>
+        <if test="userRight != null and userRight != ''">
+            and user_right in ('HEARER','ATTENDEE','CHAIRMAN')
+        </if>
+        <if test="signInType != null and signInType != ''">
+            and sign_in_type  IS NOT NULL
+        </if>
+        and org_id in
+        <foreach collection="orgIds" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+        GROUP BY org_id ) T
+    </select>
+
+</mapper>

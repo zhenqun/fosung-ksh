@@ -1,0 +1,24 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: ksh-attachment
+
+
+# actuator配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+  endpoint:
+    health:
+      show-details: always
+
+
+server:
+  port: 8099
+
+logging:
+  config: classpath:logback-spring.xml

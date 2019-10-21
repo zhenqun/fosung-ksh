@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fosung.ksh.meeting.dao.MeetingTemplateDao">
+
+
+    <select id="queryMeetingTemAll"
+            parameterType="HashMap"
+            resultType="java.util.HashMap">
+    SELECT
+    tem.id id
+
+    FROM
+    meeting_template tem
+    LEFT JOIN meeting_template_cycle tcycle ON tem."id" = tcycle."meeting_template_id"
+    WHERE 1=1
+        <if test="cycle_flag != null and cycle_flag != ''">
+         AND tcycle.cycle_flag = '${cycle_flag}'
+        </if>
+        <if test="template_type != null and template_type != ''">
+        and tem.template_type='${template_type}'
+        </if>
+    </select>
+
+</mapper>

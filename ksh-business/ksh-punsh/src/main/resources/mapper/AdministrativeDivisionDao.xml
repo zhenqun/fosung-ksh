@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fosung.ksh.punsh.dao.AdministrationDao">
+
+    <resultMap id="queryMap" type="com.fosung.ksh.punsh.vo.Administration">
+        <id property="id" column="one_id"></id>
+        <result property="cityCode" column="one_cityCode"></result>
+        <result property="cityName" column="one_cityName"></result>
+        <result property="depth" column="one_depth"></result>
+
+        <collection property="children" ofType="com.fosung.ksh.punsh.vo.Administration">
+            <id property="id" column="two_id"></id>
+            <result property="cityCode" column="two_cityCode"></result>
+            <result property="cityName" column="two_cityName"></result>
+            <result property="depth" column="two_depth"></result>
+            <collection property="children" ofType="com.fosung.ksh.punsh.vo.Administration">
+                <id property="id" column="three_id"></id>
+                <result property="cityCode" column="three_cityCode"></result>
+                <result property="cityName" column="three_cityName"></result>
+                <result property="depth" column="three_depth"></result>
+            </collection>
+        </collection>
+    </resultMap>
+    <select id="queryAdminList" resultMap="queryMap" parameterType="java.lang.String">
+
+        SELECT
+        A.city_code one_cityCode,
+        A.city_name one_cityName,
+        A.id one_id,
+        A.depth  one_depth,
+        b.city_code two_cityCode,
+        b.city_name two_cityName,
+        b.id two_id,
+        b.depth  two_depth,
+        C.city_code three_cityCode,
+        C.city_name three_cityName,
+        C.id three_id,
+        C.depth  three_depth
+        FROM
+        administrative_division
+        A LEFT JOIN administrative_division b ON A.city_code = b.parent_code
+        LEFT JOIN administrative_division C ON b.city_code = C.parent_code
+        WHERE
+        <if test="_parameter != null and  _parameter != ''">
+            A.city_code = #{cityCode}
+        </if>
+
+    </select>
+
+
+</mapper>

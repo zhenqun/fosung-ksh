@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fosung.ksh.organization.dao.OrgLifeReportRecordDao">
+
+    <resultMap id="orgLifeReportRecordMap" type="com.fosung.ksh.organization.entity.OrgLifeReportRecord">
+        <id column="id" property="id"/>
+        <result column="orgLifeId" property="orgLifeId"/>
+        <result column="orgId" property="orgId"/>
+        <result column="branchId" property="branchId"/>
+        <result column="hopeDate" property="hopeDate"/>
+        <result column="realTime" property="realTime"/>
+        <result column="orgLifeReportStatus" property="orgLifeReportStatus"/>
+        <association column="orgLife" property="orgLife" javaType="com.fosung.ksh.organization.entity.OrgLife" >
+            <id property="id" column="olId"/>
+            <result property="startDate" column="olStartDate"/>
+            <result property="endDate" column="olEndDate"/>
+            <result property="orgLifeStatus" column="orgLifeStatus"/>
+        </association>
+    </resultMap>
+
+    <sql id="reportSelect">
+        (case
+            when ol.id is null then 'UNDO'
+            when ol.start_date  &gt;  olrr.hope_date  and to_char(ol.start_date,'yyyy-MM-dd') != to_char(olrr.hope_date,'yyyy-MM-dd') then 'AFT'
+            when ol.start_date  &lt;  olrr.hope_date  and to_char(ol.start_date,'yyyy-MM-dd') != to_char(olrr.hope_date,'yyyy-MM-dd') then 'BEF'
+            when to_char(ol.start_date,'yyyy-MM-dd') = to_char(olrr.hope_date,'yyyy-MM-dd') then 'NORMAL'
+            else 'UNDO' end ) orgLifeReportStatus,
+        olrr.org_life_id orgLifeId,
+        olrr.org_id orgId,
+        olrr.branch_id branchId,
+        olrr.hope_date hopeDate,
+        ol.id as olId,
+        ol.start_date as olStartDate,
+        ol.end_date as olEndDate,
+        ol.org_life_status as orgLifeStatus
+    </sql>
+
+    <!-- 查询主题党日报备状态明细 -->
+    <select id="queryPageList" resultMap="orgLifeReportRecordMap" >
+        SELECT
+
+        <include refid="reportSelect"/>
+        FROM
+        org_life_report_record olrr
+            LEFT JOIN org_life ol ON olrr.org_life_id = ol.ID
+        WHERE
+        olrr.branch_code like '${param.branchCode}%'
+        <if test="param.branchId != null and param.branchId != ''">
+            and olrr.branch_id = #{param.branchId}
+        </if>
+        <if test="param.hopeDate != null and param.hopeDate != ''">
+            AND to_char(olrr.hope_date,'yyyy-MM') = #{param.hopeDate}
+        </if>
+
+order by olrr.hope_date desc
+</select>
+    <!--组织生活延后，组织生活时间 大于 报备预期时间-->
+    <select id="queryAft" resultMap="orgLifeReportRecordMap" >
+        select <include refid="reportSelect"/>
+        from org_life_report_record olrr
+                 inner join org_life ol on ol.id = olrr.org_life_id
+        where
+            ol.start_date  >  olrr.hope_date
+            and to_char(ol.start_date,'yyyy-MM-dd') != to_char(olrr.hope_date,'yyyy-MM-dd')
+            and olrr.branch_code like '${param.branchCode}%'
+            <if test="param.branchId != null and param.branchId != ''">
+                and olrr.branch_id = #{param.branchId}
+            </if>
+            <if test="param.hopeDate != null and param.hopeDate != ''">
+                AND to_char(olrr.hope_date,'yyyy-MM') = #{param.hopeDate}
+            </if>
+
+        order by olrr.hope_date desc
+    </select>
+    <!--查询提前召开的组织生活报备，报备预期时间  大于 组织生活时间 -->
+    <select id="queryBef" resultMap="orgLifeReportRecordMap" >
+        select <include refid="reportSelect"/>
+        from org_life_report_record olrr
+        inner join org_life ol on ol.id = olrr.org_life_id
+        where
+        ol.start_date  &lt; olrr.hope_date
+        and to_char(ol.start_date,'yyyy-MM-dd') != to_char(olrr.hope_date,'yyyy-MM-dd')
+        and olrr.branch_code like '${param.branchCode}%'
+        <if test="param.branchId != null and param.branchId != ''">
+            and olrr.branch_id = #{param.branchId}
+        </if>
+        <if test="param.hopeDate != null and param.hopeDate != ''">
+            AND to_char(olrr.hope_date,'yyyy-MM') = #{param.hopeDate}
+        </if>
+
+        order by olrr.hope_date desc
+    </select>
+
+    <!--查询正常召开的组织生活报备-->
+    <select id="queryNormal" resultMap="orgLifeReportRecordMap" >
+        select <include refid="reportSelect"/>
+        from org_life_report_record olrr
+        inner join org_life ol on ol.id = olrr.org_life_id
+        where
+        to_char(ol.start_date,'yyyy-MM-dd') = to_char(olrr.hope_date,'yyyy-MM-dd')
+        and olrr.branch_code like '${param.branchCode}%'
+        <if test="param.branchId != null and param.branchId != ''">
+            and olrr.branch_id = #{param.branchId}
+        </if>
+        <if test="param.hopeDate != null and param.hopeDate != ''">
+            AND to_char(olrr.hope_date,'yyyy-MM') = #{param.hopeDate}
+        </if>
+
+        order by olrr.hope_date desc
+    </select>
+<!--查询未正常召开的组织生活报备-->
+    <select id="queryUndo" resultMap="orgLifeReportRecordMap" >
+        select
+           'UNDO' as orgLifeReportStatus,
+            olrr.org_life_id orgLifeId,
+            olrr.org_id orgId,
+            olrr.branch_id branchId,
+            olrr.hope_date hopeDate
+        from org_life_report_record olrr
+        where
+        olrr.org_life_id is null
+        and olrr.branch_code like '${param.branchCode}%'
+        <if test="param.branchId != null and param.branchId != ''">
+            and olrr.branch_id = #{param.branchId}
+        </if>
+        <if test="param.hopeDate != null and param.hopeDate != ''">
+            AND to_char(olrr.hope_date,'yyyy-MM') = #{param.hopeDate}
+        </if>
+
+        order by olrr.hope_date desc
+    </select>
+
+
+    <!-- 根据支部Id获取主题党日是否存在 -->
+    <select id="getByBranchId" resultType="java.lang.Long">
+        select max(id) from org_life_report_record
+        where branch_id = #{ branchId }
+        and to_char(hope_date,'yyyy-MM') = to_char(now(),'yyyy-MM')
+        and org_life_id is null
+    </select>
+
+    <select id="getOrgLifeReportRecordByBranchId" resultType="com.fosung.ksh.organization.entity.OrgLifeReportRecord">
+        select * from org_life_report_record
+        where branch_id = #{ branchId }
+          and to_char(hope_date,'yyyy-MM') = to_char(now(),'yyyy-MM')
+          and org_life_id is null
+    </select>
+
+    <!-- 主题党日报备分月统计 -->
+    <select id="monthReport" resultType="java.util.HashMap">
+        SELECT T
+            .hope_date,
+            T.plan_num,
+            T.real_num,
+            T.plan_num - T.real_num not_num
+        FROM
+            (
+            SELECT TEMP
+                .temp_month hope_date,
+                COALESCE ( COUNT ( ID ), 0 ) plan_num,
+                COALESCE ( COUNT ( org_life_id ), 0 ) real_num
+            FROM
+                (
+                SELECT
+                    "unnest" temp_month
+                FROM
+                UNNEST ( ARRAY [ '${year}-01','${year}-02','${year}-01','${year}-03','${year}-04','${year}-05','${year}-06','${year}-07','${year}-08','${year}-09','${year}-10','${year}-11','${year}-12' ] ))
+                TEMP LEFT JOIN org_life_report_record r ON TEMP.temp_month = to_char( r.hope_date, 'yyyy-MM' )
+                AND branch_code LIKE '${orgCode}%'
+                AND to_char( hope_date, 'yyyy' ) = #{year}
+            GROUP BY
+            TEMP.temp_month
+            ) T
+            order by t.hope_date
+    </select>
+
+    <update id="updateByOrgLifeId" >
+        update org_life_report_record set org_life_id = null where org_life_id = #{orgLifeId}
+    </update>
+
+
+</mapper>

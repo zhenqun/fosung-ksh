@@ -1,0 +1,4 @@
+# 莱州可视化无感考勤系统服务
+spring:
+  application:
+    name: ksh-laizhou-duty-monitor

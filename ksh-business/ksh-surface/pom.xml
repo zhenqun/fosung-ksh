@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>ksh-parent</artifactId>
+        <groupId>com.fosung.ksh</groupId>
+         <version>1.1.2-SNAPSHOT</version>
+        <relativePath>../../ksh-parent/pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>ksh-surface</artifactId>
+
+
+    <description>
+        用于对第三方提供接口服务支持，现暂时面向好视通提供接口
+    </description>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>com.fosung.ksh.framework</groupId>
+            <artifactId>ksh-framework-web</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.fosung.ksh</groupId>
+            <artifactId>ksh-common</artifactId>
+            <version>${ksh.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fosung.ksh</groupId>
+            <artifactId>ksh-meeting-api</artifactId>
+            <version>${ksh.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fosung.ksh</groupId>
+            <artifactId>ksh-sys-api</artifactId>
+            <version>${ksh.version}</version>
+        </dependency>
+
+        <!--< 服务注册组装件 -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+
+    </dependencies>
+
+</project>

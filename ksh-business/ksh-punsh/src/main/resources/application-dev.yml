@@ -1,0 +1,60 @@
+
+
+app:
+  dao: # 数据库信息配置
+    dataSource:
+      driverClass: org.postgresql.Driver
+      #url: jdbc:postgresql://10.1.1.147:5432/visual_nofeelattendance_licheng?useUnicode=true&characterEncoding=utf-8
+      url: jdbc:postgresql://172.16.67.17:5432/visual_nofeelattendance_licheng?useUnicode=true&characterEncoding=utf-8
+      username: postgres
+      password: lzvisual@123
+      #password: 123456
+    jpa:
+      dialect: com.framework.dao.dialect.PostgreSQL9DialectWithoutFK
+      schema : public
+      showSql: true
+    mybatis:
+          dialect: postgresql
+          aliasPackage: com.fosung.ksh
+    swagger:
+            title: 考勤机API 接口
+            description: 用户获取用户打卡机数据获取 及基本命令交互
+            scanPackage: com.fosung.ksh.punsh.controller
+
+# 打卡机基本配置
+punch:
+  info:
+    ATTLOGStamp: 0
+    OPERLOGStamp: 0
+    ATTPHOTOStamp: 0
+    ErrorDelay: 30
+    Delay: 10
+    TransTimes: 00:00;14:05;15:05;15:06;15:10;15:15;15:22
+    TransInterval: 1
+    TransFlag: TransData AttLog  EnrollUser  ChgUser
+    TimeZone: 8
+    Realtime: 1
+    Encrypt: None
+
+
+
+
+#redis配置地址 这里使用数据库2
+spring:
+  redis:
+    database: 2
+    port: 6379
+    host: 10.1.1.147
+    password: 123456
+
+#服务注册地址
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: http://127.0.0.1:8761/eureka/
+
+logging:
+  level:
+    root: info

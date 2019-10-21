@@ -1,0 +1,22 @@
+spring:
+  profiles:
+    active: dev
+
+  sleuth:
+    sampler:
+      percentage: 1
+
+# actuator配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+  endpoint:
+    health:
+      show-details: always
+
+# 端口
+server:
+  port: 8769

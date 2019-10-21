@@ -1,0 +1,99 @@
+#!/bin/sh
+# 25
+docker pull hub.fosung.com/ksh/ksh-eureka:1.1.1-SNAPSHOT
+docker stop ksh-eureka
+docker rm ksh-eureka
+docker run --net=host -v /data/logs/ksh-eureka:/data/logs/ksh-eureka --name ksh-eureka -d hub.fosung.com/ksh/ksh-eureka:1.1.1-SNAPSHOT -e '--spring.profiles.active=dev'
+
+docker pull hub.fosung.com/ksh/ksh-surface:1.0-SNAPSHOT
+docker stop ksh-surface
+docker rm ksh-surface
+docker run --net=host -v /data/logs/ksh-surface:/data/logs/ksh-surface --name ksh-surface -d hub.fosung.com/ksh/ksh-surface:1.0-SNAPSHOT -e "--spring.profiles.active=test"
+
+docker pull hub.fosung.com/ksh/ksh-zuul:1.0-SNAPSHOT
+docker stop ksh-zuul
+docker rm ksh-zuul
+docker run --net=host -v /data/logs/ksh-zuul:/data/logs/ksh-zuul --name ksh-zuul -d hub.fosung.com/ksh/ksh-zuul:1.0-SNAPSHOT -e "--spring.profiles.active=test"
+
+#26
+docker pull hub.fosung.com/ksh/ksh-aiface:1.0-SNAPSHOT
+docker stop ksh-aiface
+docker rm ksh-aiface
+docker run --net=host -v /data/logs/ksh-aiface:/data/logs/ksh-aiface --name ksh-aiface -d hub.fosung.com/ksh/ksh-aiface:1.0-SNAPSHOT -e '--spring.profiles.active=test'
+
+docker pull hub.fosung.com/ksh/ksh-meeting-control:1.0-SNAPSHOT
+docker stop ksh-meeting-control
+docker rm ksh-meeting-control
+docker run --net=host -v /data/logs/ksh-meeting-control:/data/logs/ksh-meeting-control --name ksh-meeting-control -d hub.fosung.com/ksh/ksh-meeting-control:1.0-SNAPSHOT -e '--spring.profiles.active=test'
+
+docker pull hub.fosung.com/ksh/ksh-monitor:1.0-SNAPSHOT
+docker stop ksh-monitor
+docker rm ksh-monitor
+docker run --net=host -v /data/logs/ksh-monitor:/data/logs/ksh-monitor --name ksh-monitor -d hub.fosung.com/ksh/ksh-monitor:1.0-SNAPSHOT -e "--spring.profiles.active=test"
+
+#29
+docker pull hub.fosung.com/ksh/ksh-meeting:1.0-SNAPSHOT
+docker stop ksh-meeting
+docker rm ksh-meeting
+docker run --net=host -v /data/logs/ksh-laizhou-meeting:/data/logs/laizhou-meeting --name ksh-laizhou-meeting -d hub.fosung.com/ksh/ksh-laizhou-meeting:1.1.2-SNAPSHOT -e '--spring.profiles.active=pro'
+
+docker pull hub.fosung.com/ksh/ksh-duty-monitor-jn:1.0-SNAPSHOT
+docker stop ksh-duty-monitor-jn
+docker rm ksh-duty-monitor-jn
+docker run --net=host -v /data/logs/ksh-duty-monitor:/data/logs/ksh-duty-monitor --name ksh-duty-monitor-jn -d hub.fosung.com/ksh/ksh-duty-monitor-jn:1.0-SNAPSHOT -e "--spring.profiles.active=test"
+
+docker pull hub.fosung.com/ksh/ksh-organization:1.0-SNAPSHOT
+docker stop ksh-organization
+docker rm ksh-organization
+docker run --net=host -v /data/logs/ksh-organization:/data/logs/ksh-organization --name ksh-organization -d hub.fosung.com/ksh/ksh-organization:1.0-SNAPSHOT -e "--spring.profiles.active=test" -e "--app.visual.drop-url=http://visual.fosung.com:94/#/mobile"
+
+#32
+docker pull hub.fosung.com/ksh/ksh-sys:1.0-SNAPSHOT
+docker stop ksh-sys
+docker rm ksh-sys
+docker run --net=host -v /data/logs/ksh-sys:/data/logs/ksh-sys --name ksh-sys -d hub.fosung.com/ksh/ksh-sys:1.0-SNAPSHOT -e '--spring.profiles.active=test'
+
+#3
+docker pull hub.fosung.com/ksh/ksh-attachment:1.1.1-SNAPSHOT
+docker stop ksh-attachment
+docker rm ksh-attachment
+docker run --net=host -v /data/logs/ksh-attachment:/data/logs/ksh-attachment -v /data/attachment:/data/attachment --name ksh-attachment -d hub.fosung.com/ksh/ksh-attachment:1.1.1-SNAPSHOT -e "--spring.profiles.active=pro"
+
+
+docker pull hub.fosung.com/ksh/ksh-sys-sync:1.1.1-SNAPSHOT
+docker stop ksh-sys-sync
+docker rm ksh-sys-sync
+docker run --net=host -v /data/logs/ksh/ksh-sys-sync:/data/logs/ksh/ksh-sys-sync --name ksh-sys-sync -d hub.fosung.com/ksh/ksh-sys-sync:1.1.1-SNAPSHOT -e '--spring.profiles.active=test' -e '--server.port=8012'
+
+docker stop ksh-sys-sync-2
+docker rm ksh-sys-sync-2
+docker run --net=host -v /data/logs/ksh/ksh-sys-sync:/data/logs/ksh/ksh-sys-sync --name ksh-sys-sync-2 -d hub.fosung.com/ksh/ksh-sys-sync:1.1.1-SNAPSHOT -e '--spring.profiles.active=test' -e '--server.port=8013'
+
+docker stop ksh-sys-sync-3
+docker rm ksh-sys-sync-3
+docker run --net=host -v /data/logs/ksh/ksh-sys-sync:/data/logs/ksh/ksh-sys-sync --name ksh-sys-sync-3 -d hub.fosung.com/ksh/ksh-sys-sync:1.1.1-SNAPSHOT -e '--spring.profiles.active=test' -e '--server.port=8014'
+
+docker stop ksh-sys-sync-4
+docker rm ksh-sys-sync-4
+docker run --net=host -v /data/logs/ksh/ksh-sys-sync:/data/logs/ksh/ksh-sys-sync --name ksh-sys-sync-4 -d hub.fosung.com/ksh/ksh-sys-sync:1.1.1-SNAPSHOT -e '--spring.profiles.active=test' -e '--server.port=8015'
+
+docker stop ksh-sys-sync-5
+docker rm ksh-sys-sync-5
+docker run --net=host -v /data/logs/ksh/ksh-sys-sync:/data/logs/ksh/ksh-sys-sync --name ksh-sys-sync-5 -d hub.fosung.com/ksh/ksh-sys-sync:1.1.1-SNAPSHOT -e '--spring.profiles.active=test' -e '--server.port=8016'
+
+docker stop ksh-sys-sync-6
+docker rm ksh-sys-sync-6
+docker run --net=host -v /data/logs/ksh/ksh-sys-sync:/data/logs/ksh/ksh-sys-sync --name ksh-sys-sync-6 -d hub.fosung.com/ksh/ksh-sys-sync:1.1.1-SNAPSHOT -e '--spring.profiles.active=test' -e '--server.port=8017'
+
+docker stop ksh-sys-sync-7
+docker rm ksh-sys-sync-7
+docker run --net=host -v /data/logs/ksh/ksh-sys-sync:/data/logs/ksh/ksh-sys-sync --name ksh-sys-sync-7 -d hub.fosung.com/ksh/ksh-sys-sync:1.1.1-SNAPSHOT -e '--spring.profiles.active=test' -e '--server.port=8018'
+
+docker stop ksh-sys-sync-8
+docker rm ksh-sys-sync-8
+docker run --net=host -v /data/logs/ksh/ksh-sys-sync:/data/logs/ksh/ksh-sys-sync --name ksh-sys-sync-8 -d hub.fosung.com/ksh/ksh-sys-sync:1.1.1-SNAPSHOT -e '--spring.profiles.active=test' -e '--server.port=8019'
+
+docker stop ksh-sys-sync-9
+docker rm ksh-sys-sync-9
+docker run --net=host -v /data/logs/ksh/ksh-sys-sync:/data/logs/ksh/ksh-sys-sync --name ksh-sys-sync-9 -d hub.fosung.com/ksh/ksh-sys-sync:1.1.1-SNAPSHOT -e '--spring.profiles.active=test' -e '--server.port=8020'
+

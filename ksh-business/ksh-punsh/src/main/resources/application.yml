@@ -1,0 +1,48 @@
+#加载配置文件
+spring:
+  http:
+      encoding:
+        charset: UTF-8
+        force-request: true
+        force-response: false
+        mutiCharset: GB2312
+        mutiUrls:
+          - /iclock/cdata
+  profiles:
+    active: dev
+  application:
+    name: ksh-punsh
+
+app:
+  dt:
+    auth:
+      enableLogin: true
+      loginUrl: /login/dt
+      clientId: visual-client-ui
+      clientSecret: ido85R&Dcenter
+    sync:
+          rootId: bf1a8f4e-57f3-11e7-87fa-0050569a68
+  session:
+    cookieSessionEncode: false
+  secure:
+    auth:
+      urlAuths:
+        -
+          url: /**
+          filter: anon
+      type: local
+    signature:
+      appKey: 123456
+      appSecret: 123456789
+    referer:
+      enable: false
+    sso:
+      enable: false
+attendance:
+  artemisConfig:
+    host: 123.130.115.76:1443
+    appKey: 26648104
+    appSecret: QCi0YTOSdu50KfN48L1X
+# 端口
+server:
+  port: 8088

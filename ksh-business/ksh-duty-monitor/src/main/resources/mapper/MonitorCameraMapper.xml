@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fosung.ksh.monitor.dao.MonitorCameraDao">
+
+
+    <resultMap id="monitorCameraInfo" type="com.fosung.ksh.monitor.entity.MonitorCamera">
+        <result column="village_id" property="villageId"/>
+        <result column="monitor_status" property="monitorStatus"/>
+        <result column="index_code" property="indexCode"/>
+        <result column="show_order" property="showOrder"/>
+    </resultMap>
+
+
+    <sql id="areaSql">
+        with tmp as (SELECT UNNEST ( ARRAY [<foreach collection="areaIdList" index="index" item="item" separator=",">#{item}</foreach>]:: INT8 [] ) AS area_id )
+    </sql>
+
+
+    <select id="queryList" resultMap="monitorCameraInfo">
+        <include refid="areaSql"></include>
+        select m.* from monitor_camera m
+        join tmp on m.village_id = tmp.area_id
+    </select>
+
+
+    <select id="queryPageList" resultMap="monitorCameraInfo">
+        <include refid="areaSql"></include>
+        select m.* from monitor_camera m
+        join tmp on m.village_id = tmp.area_id
+        where 1 = 1
+        <if test="monitorStatus != null and monitorStatus != ''">
+            and monitor_status = #{monitorStatus}
+        </if>
+        order by show_order
+    </select>
+
+
+</mapper>

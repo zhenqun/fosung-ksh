@@ -1,0 +1,27 @@
+#redis配置地址
+spring:
+  profiles:
+    active: dev
+
+# actuator配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+  endpoint:
+    health:
+      show-details: always
+
+feign:
+  header:
+    enable: false
+
+# 端口
+server:
+  port: 8011
+
+
+logging:
+  config: classpath:logback-spring.xml

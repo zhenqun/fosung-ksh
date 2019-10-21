@@ -1,0 +1,16 @@
+spring:
+  zipkin:
+    base-url: http://172.16.67.25:8081
+  redis:
+    database: 1
+    port: 6379
+    host: 172.16.67.18
+
+#服务注册地址
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: http://172.16.67.25:8761/eureka/
+

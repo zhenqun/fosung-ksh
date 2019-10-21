@@ -1,0 +1,13 @@
+eureka:
+  server:
+    enable-self-preservation: false
+    renewalPercentThreshold: 0.4
+    eviction-interval-timer-in-ms: 5000
+  instance:
+    prefer-ip-address: true
+    ip-address: localhost
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://${eureka.instance.ip-address}:${server.port}

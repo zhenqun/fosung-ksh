@@ -1,0 +1,43 @@
+app:
+  swagger:
+    title: 系统管理API接口文档
+    description:  系统管理API接口文档，包括用户，角色，资源，权限统一配置等接口信息
+    scanPackage: com.fosung.ksh.sys.web.controller
+
+    # 关闭session编码验证
+  session:
+    cookieSessionEncode: false
+  secure:
+    referer:
+      enable: false
+    # 是否允许跨域请求，默认禁止，如果允许跨域的话，需要设置允许的跨域方法及请求头
+    cors:
+      enable: false
+#redis配置地址
+spring:
+  profiles:
+    active: local
+
+  sleuth:
+    sampler:
+      percentage: 1
+
+# actuator配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+  endpoint:
+    health:
+      show-details: always
+
+
+# 端口
+server:
+  port: 8006
+
+logging:
+  config: classpath:logback-spring.xml
+

@@ -1,0 +1,5 @@
+# Application Listeners
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.fosung.ksh.oauth2.server.config.SSOAutoConfiguration,\
+com.fosung.ksh.oauth2.server.dt.secure.configurer.AppDTWebSecureAutoConfiguration
+

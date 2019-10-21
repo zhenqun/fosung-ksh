@@ -1,0 +1,24 @@
+app:
+  swagger:
+    title: 系统管理API接口文档
+    description:  系统管理API接口文档，包括用户，角色，资源，权限统一配置等接口信息
+    scanPackage: com.fosung.ksh.sys.controller
+
+    # 关闭session编码验证
+  session:
+    cookieSessionEncode: false
+
+#redis配置地址
+spring:
+  application:
+    name: ksh-sys-sync
+  profiles:
+    active: dev
+
+# 端口
+server:
+  port: 8016
+
+logging:
+  config: classpath:logback-spring.xml
+

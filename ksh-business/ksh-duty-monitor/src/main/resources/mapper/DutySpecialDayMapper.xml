@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fosung.ksh.duty.dao.DutySpecialDayDao">
+
+
+    <resultMap id="dayInfo" type="com.fosung.ksh.duty.entity.DutySpecialDay">
+        <result column="special_date" property="specialDate"/>
+        <result column="is_duty" property="isDuty"/>
+        <result column="shift_id" property="shiftId"/>
+    </resultMap>
+
+
+    <select id="getDayInfo" resultMap="dayInfo">
+        select * from duty_special_day
+         where shift_id = #{shiftId}
+           and date_trunc( 'day', special_date ) = date_trunc( 'day',#{ specialDate } :: DATE )
+    </select>
+</mapper>

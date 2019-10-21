@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fosung.ksh.duty.dao.DutyVillageRecordDao">
+
+    <resultMap id="recordMap" type="com.fosung.ksh.duty.entity.DutyVillageRecord">
+        <id column="id" property="id"/>
+        <result column="duty_people_id" property="dutyPeopleId"/>
+        <result column="village_id" property="villageId"/>
+        <result column="am_sign_time" property="amSignTime"/>
+        <result column="am_sign_off_time" property="amSignOffTime"/>
+        <result column="pm_sign_time" property="pmSignTime"/>
+        <result column="pm_sign_off_time" property="pmSignOffTime"/>
+        <result column="index_code" property="indexCode"/>
+    </resultMap>
+
+
+    <sql id="areaSql">
+        with tmp as (SELECT UNNEST ( ARRAY [<foreach collection="areaIdList" index="index" item="item" separator=",">#{item}</foreach>]:: INT8 [] ) AS area_id )
+    </sql>
+
+
+    <!-- 根据村庄CODE获取今日值班情况 -->
+    <select id="queryRecordList" resultMap="recordMap">
+        <include refid="areaSql"></include>
+        SELECT
+        r.id,
+        r.duty_people_id,
+        r.village_id,
+        r.am_sign_time,
+        r.am_sign_off_time,
+        r.pm_sign_time,
+        r.pm_sign_off_time,
+        r.index_code,
+        r.duty_pm_people_id,
+        r.pm_sign_time
+        FROM
+        tmp
+        JOIN duty_village_record r ON tmp.area_id = r.village_id
+
+        where
+        date_trunc( 'day', r.hope_am_sign_time ) &gt;= date_trunc( 'day',#{ startTime } :: DATE )
+        and date_trunc( 'day', r.hope_am_sign_time ) &lt;= date_trunc( 'day',#{ endTime } :: DATE )
+
+        <if test="isSign != null and isSign == true">
+            and r.duty_people_id is not null
+        </if>
+        <if test="isSign != null and isSign == false">
+            and r.duty_people_id is null
+        </if>
+
+        ORDER BY
+        r.am_sign_time is NULL,r.am_sign_time DESC
+    </select>
+
+
+    <!-- 根据村庄CODE获取今日值班情况 -->
+    <select id="countRecord" resultType="Integer">
+        <include refid="areaSql"></include>
+        SELECT
+        count(*)
+        FROM
+        tmp
+        JOIN duty_village_record r ON tmp.area_id = r.village_id
+        where
+        date_trunc('${type}',r.hope_am_sign_time) = date_trunc('${type}' ,#{signTime} :: DATE)
+
+        <if test="dutyType != null and dutyType != ''">
+            and r.duty_type = #{dutyType}
+        </if>
+
+        <if test="isSign != null and isSign == true">
+            and r.duty_people_id is not null
+        </if>
+        <if test="isSign != null and isSign == false">
+            and r.duty_people_id is null
+        </if>
+    </select>
+
+
+
+
+</mapper>

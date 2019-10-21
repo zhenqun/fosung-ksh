@@ -1,0 +1,91 @@
+spring:
+  profiles:
+    active: local
+
+  servlet:
+    multipart:
+      # 上传一个文件最大值,默认1Mb
+      max-file-size: 1024Mb
+      # 上传多个文件最大值,50Mb,默认10Mb
+      max-request-size: 1024Mb
+
+  sleuth:
+    sampler:
+      percentage: 1
+
+
+# actuator配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+  endpoint:
+    health:
+      show-details: always
+
+# 端口
+server:
+  port: 8080
+
+#网关代理
+zuul:
+  #取消敏感header
+  sensitive-headers:
+
+  host:
+    socket-timeout-millis: 300000
+    connect-timeout-millis: 100000
+
+  # 设置hystrix的隔离策略
+  ribbon-isolation-strategy: semaphore
+
+  # 调整为最大的信号量
+  semaphore:
+    max-semaphores: 200
+
+  routes:
+    # 对外提供接口
+    ksh-surface:
+      path: /visual-surface/**
+      serviceId: ksh-surface
+
+    # 好视通接口
+    ksh-sys:
+      path: /visual-sys/**
+      serviceId: ksh-sys-web
+
+    # sso统一登录
+    ksh-oauth2-server:
+      path: /ksh-sso/**
+      serviceId: ksh-oauth2-server
+
+    # 视频会议
+    ksh-meeting:
+      path: /ksh-meeting/**
+      serviceId: ksh-laizhou-meeting
+
+    # 组织生活
+    ksh-organization:
+      path: /ksh-organization/**
+      serviceId: ksh-laizhou-organization
+
+    # 无感考勤
+    ksh-duty-monitor:
+      path: /ksh-duty-monitor/**
+      serviceId: ksh-laizhou-duty-monitor
+
+
+logging:
+  config: classpath:logback-spring.xml
+
+
+# 开启饥饿加载
+ribbon:
+  eager-load:
+    enabled: true
+  ConnectTimeout: 10000
+  ReadTimeout: 300000
+  MaxAutoRetries: 0 #对 第一次 请求 的 服务 的 重试 次数
+  MaxAutoRetriesNextServer: 0 #要 重试 的 下一个 服务 的 最大 数量（ 不包括

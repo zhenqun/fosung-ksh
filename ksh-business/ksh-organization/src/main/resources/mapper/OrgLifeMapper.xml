@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.fosung.ksh.organization.dao.OrgLifeDao">
+
+    <resultMap id="orgLifeResult" type="com.fosung.ksh.organization.entity.OrgLife">
+        <result property="id" column="id"></result>
+        <result property="meetingName" column="meeting_name"></result>
+        <result property="startDate" column="start_date"></result>
+        <result property="endDate" column="end_date"></result>
+        <result property="createDatetime" column="create_time"></result>
+        <result property="orgLifeStatus" column="org_life_status"></result>
+        <result property="pushStatus" column="push_status"></result>
+        <collection property="types" column="id" select="queryTypes">
+        </collection>
+        <collection property="branches" column="id" select="queryBranchs">
+        </collection>
+    </resultMap>
+
+<select id="queryPageList" resultMap="orgLifeResult">
+        SELECT
+            t1.ID,
+            t1.meeting_name,
+            t1.start_date,
+            t1.end_date,
+            t1.create_time,
+            t1.org_life_status,
+            t1.push_status
+        FROM
+          org_life t1
+        JOIN org_life_type t2 ON t1.ID = t2.org_life_id
+        join org_life_branch t3 on t1.id = t3.org_life_id
+        WHERE
+          t1.del = FALSE
+        <if test="classificationId != null and classificationId != ''">
+            AND t2.classification_id = #{classificationId}
+        </if>
+        <if test="startDate != null ">
+            AND t1.start_date &gt;= #{startDate}
+        </if>
+        <if test="endDate != null ">
+            AND t1.start_date &lt;= #{endDate}
+        </if>
+        <if test="pushStatus != null and pushStatus != ''">
+            AND t1.push_status = #{pushStatus}
+        </if>
+        <if test="meetingName != null and meetingName != ''">
+            AND t1.meeting_name like '%' || #{meetingName} || '%'
+        </if>
+
+        AND t3.branch_id in
+        <foreach collection="branchIdList" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+
+        <!--<if test="orgId != null and orgId != ''">-->
+            <!--AND (t3.branch_id = #{orgId} or   t1.org_id = #{orgId})-->
+        <!--</if>-->
+        GROUP BY
+        t1.ID,
+        t1.meeting_name,
+        t1.start_date,
+        t1.end_date,
+        t1.create_time,
+        t1.org_life_status,
+        t1.push_status
+        order by t1.start_date desc
+    </select>
+
+    <select id="queryTypes" resultType="com.fosung.ksh.organization.entity.OrgLifeType">
+      select
+          id,
+          org_life_id orgLifeId,
+          classification_id classificationId,
+          type_name typeName
+      from org_life_type
+      where org_life_id = #{id}
+    </select>
+
+    <select id="queryBranchs" resultType="com.fosung.ksh.organization.entity.OrgLifeBranch">
+      select
+          id,
+          org_life_id orgLifeId,
+          branch_id branchId,
+          branch_code branchCode,
+          branch_name branchName
+      from org_life_branch
+      where org_life_id = #{id}
+    </select>
+
+
+    <select id="countTypes" resultType="Integer">
+        SELECT
+            count(*)
+        FROM
+            org_life t1
+            JOIN org_life_branch t2 ON t1."id" = t2.org_life_id
+            join org_life_type t3 on t1.id = t3.org_life_id
+            where
+            t1.meeting_room_id is not null
+            and t2.branch_id in
+            <foreach collection="branchIdList" open="(" close=")" separator="," item="item">
+                #{item}
+            </foreach>
+            <if test="classificationId != null and classificationId != ''">
+                and t3.classification_id = #{classificationId}
+            </if>
+
+    </select>
+
+
+
+    <select id="orgLifeIds" resultType="String">
+        select t1."id" from org_life t1 JOIN org_life_branch olb ON t1."id"=olb.org_life_id
+
+        WHERE t1.del = FALSE
+        <if test="paramSearch.startDate != ''and  paramSearch.startDate != null ">
+            AND to_char(t1.start_date, 'yyyy-MM-dd')<![CDATA[>=]]>#{paramSearch.startDate}
+        </if>
+        <if test="paramSearch.endDate != ''and  paramSearch.endDate != null ">
+            AND to_char(t1.start_date, 'yyyy-MM-dd')<![CDATA[<=]]>#{paramSearch.endDate}
+        </if>
+        and olb.branch_id in
+        <foreach collection="paramSearch.orgIds" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="orgLifeReportIds" resultType="String">
+        select  t1."id" from org_life t1 JOIN org_life_branch olb ON t1."id"=olb.org_life_id
+        join org_life_type otype on olb."org_life_id"=otype.org_life_id
+        WHERE t1.del = FALSE
+        <if test="paramSearch.startDate != null and paramSearch.startDate != '' ">
+            AND to_char(t1.start_date, 'yyyy-MM-dd')<![CDATA[>=]]>#{paramSearch.startDate}
+        </if>
+        <if test="paramSearch.endDate != null and paramSearch.endDate !=''">
+            AND to_char(t1.start_date, 'yyyy-MM-dd')<![CDATA[<=]]>#{paramSearch.endDate}
+        </if>
+        and olb.branch_id in
+        <foreach collection="paramSearch.orgIds" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+        <if test="paramSearch.classificationId != null ">
+            AND otype.classification_id=#{paramSearch.classificationId}
+        </if>
+
+    </select>
+</mapper>

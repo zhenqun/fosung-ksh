@@ -1,0 +1,37 @@
+app:
+  swagger:
+    title: sso单点登录客户端
+    description: sso单点登录客户端，获取token令牌，对令牌进行检查刷新，并可通过令牌
+    scanPackage: com.fosung.ksh.oauth2.client.controller
+
+  # 禁用session编码
+  session:
+    cookieSessionEncode: false
+
+#redis配置地址
+spring:
+  profiles:
+    active: dev
+
+  sleuth:
+    sampler:
+      percentage: 1
+
+
+# actuator配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+  endpoint:
+    health:
+      show-details: always
+
+# 端口
+server:
+  port: 8962
+
+logging:
+  config: classpath:logback-spring.xml

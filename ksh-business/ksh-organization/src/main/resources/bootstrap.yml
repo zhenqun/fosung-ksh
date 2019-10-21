@@ -1,0 +1,4 @@
+#莱州可视化组织生活
+spring:
+  application:
+    name: ksh-laizhou-organization

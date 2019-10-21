@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fosung.ksh.meeting.dao.MeetingRoomDao">
+
+    <resultMap id="countMap" type="HashMap">
+        <result column="meetingType"  property="meetingType"/>
+        <result column="countNum" javaType="Integer"  property="countNum"/>
+    </resultMap>
+
+    <resultMap id="meetingRoomMap" type="com.fosung.ksh.meeting.entity.MeetingRoom">
+        <result column="id"  property="id"/>
+        <result column="hst_room_id"  property="hstRoomId"/>
+        <result column="room_name"  property="roomName"/>
+        <result column="meeting_type"  property="meetingType"/>
+        <result column="hope_start_time"  property="hopeStartTime"/>
+        <result column="join_number"  property="currentUserNum"/>
+        <result column="mperson_number"  property="allUserNum"/>
+    </resultMap>
+
+    <!--查询正在进行中的会议室，并关联在线人数-->
+    <select id="queryGoingMeetingList" resultMap="meetingRoomMap">
+        SELECT
+        m3.*, m2.mperson_number from (
+
+        SELECT
+        t2.join_number,
+        t1.*
+        FROM
+        meeting_room t1
+        JOIN (
+        SELECT M.ID id,
+        COUNT ( r.user_hash ) join_number
+        FROM
+        meeting_room
+        M LEFT JOIN (  select    distinct meeting_room_id, user_hash from meeting_join_record )  r ON M.ID = r.meeting_room_id
+        WHERE M.del = FALSE
+        and M.meeting_status='GOING'
+        <if test="meetingType!= null and meetingType != ''">
+            and m.meeting_type =#{meetingType}
+        </if>
+        <if test="roomName!= null and roomName != ''">
+            and m.room_name like '${roomName}%'
+        </if>
+        <if test="orgIdList != null and orgIdList.size() != 0">
+            and m.org_id in
+            <foreach collection="orgIdList" open="(" close=")" item="item" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        GROUP BY
+        M.ID
+        ) t2 ON t1.ID = t2.ID
+        ORDER BY T2.join_number DESC
+        ) m3 left join (
+        SELECT
+        M . ID "id",
+        COUNT (mperson. ID) mperson_number
+        FROM
+        meeting_room M
+        LEFT JOIN meeting_room_person mperson ON M . ID = mperson.meeting_room_id
+        WHERE
+        M .del = FALSE
+        AND M .meeting_status = 'GOING'
+        AND mperson.user_right IN (
+        'HEARER',
+        'ATTENDEE',
+        'CHAIRMAN'
+        )
+        GROUP BY
+        M . ID
+        )m2 on m3."id"=m2."id"
+</select>
+
+    <!-- 查询我的会议室列表 -->
+    <select id="queryMyMeetingList"
+            resultType="java.util.HashMap">
+        SELECT
+        mr.*,
+        mrp.user_right
+        FROM
+        meeting_room mr join meeting_room_person mrp
+        on mr.id=mrp.meeting_room_id
+        WHERE
+        mr.del = FALSE
+        and mr.hst_room_id is not null
+
+        and mrp.user_right != 'NOAUTH'
+        and mr.meeting_type='GENERAL'
+        <if test="orgId != null and orgId != ''">
+            and mr.org_id = #{orgId}
+        </if>
+        <if test="roomName != null and roomName != ''">
+            and mr.room_name like '${roomName}%'
+        </if>
+        <if test="userHash != null and userHash != ''">
+            and mrp.user_hash = #{userHash}
+        </if>
+        <if test="meetingStatus == 'GOING'">
+            and mr.meeting_status='GOING'
+        </if>
+        <if test="meetingStatus == 'FINISHED'">
+            and mr.meeting_status='FINISHED'
+        </if>
+        order by mr.hope_start_time desc,mr.real_start_time desc,mr.last_update_time desc,mr.create_time desc
+    </select>
+
+    <select id="countMeetingType"  resultMap="countMap">
+        select count(t) countNum,meeting_type meetingType from meeting_room t
+        where del = false and meeting_status = 'GOING' and org_id in
+        <foreach collection="orgIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+          group by meeting_type
+    </select>
+
+    <select id="countMeetingNum" resultType="java.lang.Integer" parameterType="java.util.HashMap">
+        select count(t) countNum from meeting_room t
+        where del = false and hst_room_id is not null and org_id in
+        <foreach collection="orgIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <if test="meetingStatus != null and meetingStatus != ''">
+        and meeting_status = #{meetingStatus}
+        </if>
+        <if test="time != null and time != ''">
+            AND #{time} = to_char(real_start_time, 'yyyy-MM-dd')
+        </if>
+        <if test="meetingType!= null and meetingType != ''">
+        and meeting_type =#{meetingType}
+        </if>
+    </select>
+
+    <select id="meetingsAllYear" resultType="int" >
+        SELECT
+            COUNT (1)
+        FROM
+            meeting_room
+        WHERE
+            del = FALSE
+        and org_id in
+        <foreach collection="orgIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+          AND #{endDate} >= hope_start_time
+          and #{startDate}  &lt;= hope_start_time
+    </select>
+
+   <!--接入站点数-->
+    <select id="sitesIng"  resultType="java.lang.Integer"  parameterType="java.util.HashMap" >
+        select count(*) from (
+        select    distinct meeting_room_id, user_hash   from meeting_join_record
+        where meeting_room_id in ( SELECT
+        id
+        FROM
+        meeting_room
+        WHERE
+        del = FALSE and hst_room_id is not null
+        <if test="meetingType!= null and meetingType != ''">
+            and meeting_type =#{meetingType}
+        </if>
+        <if test="orgIds != null and orgIds.size() != 0">
+            and org_id in
+            <foreach collection="orgIds" open="(" close=")" item="item" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="time != null and time != ''">
+            AND #{time} = to_char(real_start_time, 'yyyy-MM-dd')
+        </if>
+       )) a
+    </select>
+</mapper>

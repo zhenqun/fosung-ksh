@@ -1,0 +1,35 @@
+app:
+  swagger:
+    title: 视频会议API接口
+    description: 用于创建会议室、对会议室授权，同步用户信息，现暂时支持好视通
+    scanPackage: com.fosung.ksh.meeting.controller
+  dt:
+    sync:
+      rootId: bf1a8f4e-57f3-11e7-87fa-0050569a68e4
+
+#redis配置地址
+spring:
+  profiles:
+    active: dev
+
+  sleuth:
+    sampler:
+      percentage: 1
+
+# actuator配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+  endpoint:
+    health:
+      show-details: always
+
+# 端口
+server:
+  port: 8004
+
+logging:
+  config: classpath:logback-spring.xml

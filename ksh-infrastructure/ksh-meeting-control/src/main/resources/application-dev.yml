@@ -1,0 +1,29 @@
+#redis配置地址
+spring:
+  redis:
+    database: 1
+    port: 6379
+    host: 10.1.1.147
+    password: 123456
+
+  zipkin:
+    base-url: http://192.168.103.188:8081
+
+  cloud:
+    inetutils:
+      preferred-networks:
+        - 192.168
+
+#服务注册地址
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: http://192.168.103.188:8761/eureka/
+
+ksh:
+  hst:
+    webServiceUrl: http://visual.fosung.com:7698/fmapi/webservice/jaxws?wsdl
+    joinMeetingUrl: http://visual.fosung.com:7698/launch/toEnterMeeting.do?roomID={roomId}&userName={userName}&userPwd=123456&autoCheck=1&orgLife=1&layoutCode={layoutCode}
+    patrolMeetingUrl: http://visual.fosung.com:7698/launch/toEnterMeeting.do?roomID={roomId}&userName={userName}&userPwd=123456&patrol=1

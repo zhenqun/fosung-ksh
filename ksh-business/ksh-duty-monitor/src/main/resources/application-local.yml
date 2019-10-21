@@ -1,0 +1,55 @@
+app:
+  # 数据源配置信息
+  dao:
+    dataSource:
+      url: jdbc:postgresql://10.1.1.147:5432/ksh_duty_monitor?useUnicode=true&characterEncoding=utf-8&autoReconnect=true
+      driverClass: org.postgresql.Driver
+      username: postgres
+      password: 123456
+      sql-script-encoding: utf-8
+    mybatis:
+      dialect: postgresql
+      aliasPackage: com.fosung.ksh
+
+ksh:
+  duty:
+    cityCodes:
+      - 370683
+    libId: 1557390531102
+    libIds:
+      - 1557390531102
+      - 1555065189292
+      - 1555035860428
+      - 1556540851561
+      - 1556545884246
+      - 1556976001591
+
+#redis配置地址
+spring:
+  redis:
+    database: 1
+    port: 6379
+    host: 10.1.1.147
+    password: 123456
+
+  zipkin:
+    base-url: http://192.168.103.188:8081
+
+#服务注册地址
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+# 开启饥饿加载
+ribbon:
+  eager-load:
+    enabled: true
+  ConnectTimeout: 10000
+  ReadTimeout: 60000
+  MaxAutoRetries: 1 #对 第一次 请求 的 服务 的 重试 次数
+  MaxAutoRetriesNextServer: 1 #要 重试 的 下一个 服务 的 最大 数量（ 不包括
+
+

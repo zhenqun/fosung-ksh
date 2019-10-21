@@ -1,0 +1,3 @@
+spring:
+  application:
+    name: ksh-oauth2-server

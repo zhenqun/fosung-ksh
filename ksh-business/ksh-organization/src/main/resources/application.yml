@@ -1,0 +1,46 @@
+app:
+#  dao:
+#    mybatis:
+#      config: classpath:mybatis-config.xml
+  swagger:
+    title: 组织生活接口
+    description: 用于创建组织生活，并与E支部进行同步
+    scanPackage: com.fosung.ksh.organization.controller
+
+  secure:
+    referer:
+      enable: false
+#redis配置地址
+spring:
+  profiles:
+    active: dev
+
+  sleuth:
+    sampler:
+      percentage: 1
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+
+# 端口
+server:
+  port: 8007
+
+logging:
+  config: classpath:logback-spring.xml
+#  level:
+#    com.fosung.ksh.organization.dao: debug
+#    com.ibatis: DEBUG
+#    com.ibatis.common.jdbc.SimpleDataSource: DEBUG
+#    com.ibatis.common.jdbc.ScriptRunner: DEBUG
+#    com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate: DEBUG
+#    java.sql.Connection: DEBUG
+#    java.sql.Statement: DEBUG
+#    java.sql.PreparedStatement: DEBUG

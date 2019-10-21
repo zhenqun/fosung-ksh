@@ -1,0 +1,40 @@
+ksh:
+  hikVision:
+    config:
+      host: 123.130.115.76:1443
+      appKey: 26648104
+      appSecret: QCi0YTOSdu50KfN48L1X
+
+#redis配置地址
+spring:
+  redis:
+    database: 1
+    port: 6379
+    host: 10.1.1.147
+    password: 123456
+
+#服务注册地址
+eureka:
+  instance:
+    prefer-ip-address: true
+    ip-address: localhost
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+# 开启饥饿加载
+ribbon:
+  eager-load:
+    enabled: true
+  ConnectTimeout: 10000
+  ReadTimeout: 60000
+  MaxAutoRetries: 1 #对 第一次 请求 的 服务 的 重试 次数
+  MaxAutoRetriesNextServer: 1 #要 重试 的 下一个 服务 的 最大 数量（ 不包括
+
+
+logging:
+  level:
+    root: info
+    com:
+      fosung: debug
+    springfox: debug

@@ -1,0 +1,58 @@
+app:
+  swagger:
+    title: SSO统一登录API接口文档
+    description:  统一登录，用户进行token认证
+    scanPackage: com.fosung.ksh.sys.controller
+
+    # 关闭session编码验证
+  session:
+    cookieSessionEncode: false
+
+  secure:
+    auth:
+      enable: true
+      urlAuths:
+        -
+          url: /oauth/authorize
+          filter: logineduser
+        -
+          url: /**
+          filter: anon
+
+    referer:
+      enable: false
+
+    # 是否允许跨域请求，默认禁止，如果允许跨域的话，需要设置允许的跨域方法及请求头
+    cors:
+      enable: false
+
+
+#redis配置地址
+spring:
+  profiles:
+    active: dev
+
+  sleuth:
+    sampler:
+      percentage: 1
+
+
+# actuator配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+  endpoint:
+    health:
+      show-details: always
+
+
+# 端口
+server:
+  port: 8961
+
+logging:
+  config: classpath:logback-spring.xml
+

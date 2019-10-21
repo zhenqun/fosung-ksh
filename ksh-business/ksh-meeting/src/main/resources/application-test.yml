@@ -1,0 +1,40 @@
+app:
+  dao:
+    dataSource:
+      url: jdbc:postgresql://172.16.67.36:5432/ksh_meeting?useUnicode=true&characterEncoding=utf-8&autoReconnect=true
+      driverClass: org.postgresql.Driver
+      username: postgres
+      password: lzvisual@123
+      sql-script-encoding: utf-8
+    mybatis:
+      dialect: postgresql
+      aliasPackage: com.fosung.ksh.meeting.dao
+  dt:
+    sync:
+      rootId: bf1a8f4e-57f3-11e7-87fa-0050569a68e4
+#redis配置地址
+spring:
+  redis:
+    database: 1
+    port: 6379
+    host: 172.16.67.37
+
+  zipkin:
+    base-url: http://172.16.67.37:8081
+
+#服务注册地址
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: http://172.16.67.37:8761/eureka/
+
+# 开启饥饿加载
+ribbon:
+  eager-load:
+    enabled: true
+  ConnectTimeout: 10000
+  ReadTimeout: 60000
+  MaxAutoRetries: 0 #对 第一次 请求 的 服务 的 重试 次数
+  MaxAutoRetriesNextServer: 0 #要 重试 的 下一个 服务 的 最大 数量（ 不包括

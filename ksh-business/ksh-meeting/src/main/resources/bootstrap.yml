@@ -1,0 +1,4 @@
+#莱州可视化视频会议
+spring:
+  application:
+    name: ksh-laizhou-meeting

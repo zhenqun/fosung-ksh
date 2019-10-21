@@ -1,0 +1,19 @@
+spring:
+  zipkin:
+    base-url: http://172.16.67.25:8081
+
+
+#服务注册地址
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: http://172.16.67.25:8761/eureka/
+
+#网关代理
+zuul:
+  routes:
+    ksh-ytezb:
+      path: /yantai-ezb/**
+      url: http://visual.fosung.com:97/yantai-ezb/

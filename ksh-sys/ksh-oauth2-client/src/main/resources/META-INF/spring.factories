@@ -1,0 +1,4 @@
+# Application Listeners
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.fosung.ksh.oauth2.client.config.Oauth2ClientAutoConfiguration
+
